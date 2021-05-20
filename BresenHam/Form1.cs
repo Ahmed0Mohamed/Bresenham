@@ -60,7 +60,7 @@ namespace BresenHam
             public Form1()
         {
             InitializeComponent();
-            chart1.Titles.Add("Bresenham's line algorith");
+            chart1.Titles.Add("DDA and Bresenham's line algorith");
   
             //chart1.Series["P1"].Points.AddXY("-10", "-10");
             //chart1.Series["P1"].Points.AddXY("0", "0");
@@ -92,160 +92,178 @@ namespace BresenHam
             int y1 = Convert.ToInt32(Y1.Text);
             int x2 = Convert.ToInt32(X2.Text);
             int y2 = Convert.ToInt32(Y2.Text);
-
-            int Octant = GetOctant(x1, y1, x2, y2);
-            Console.WriteLine("Octant is " + Octant);
-
-            // Get dx, dy, p0
-            int dx, dy, p0, Dc, Xk, Yk, Pk;
-            switch (Octant)
+            if (radioButton1.Checked == true)
             {
-                case 1: //Without Changes
-                    dx = x2 - x1;
-                    dy = y2 - y1;
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk++; Yk++; Pk += Dc; }
-                        else
-                        { Xk++; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
+                int Octant = GetOctant(x1, y1, x2, y2);
+                Console.WriteLine("Octant is " + Octant);
 
-                    }
-                    break;
-                case 2://Swap(x1,y1) & Swap(x2,y2)
-                    int[] Point1 = Swap(x1, y1);
-                    int[] Point2 = Swap(x2, y2);
-                    x1 = Point1[0]; y1 = Point1[1];
-                    x2 = Point2[0]; y2 = Point2[1];
-                    dx = x2 - x1;
-                    dy = y2 - y1;
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk++; Yk++; Pk += Dc; }
-                        else
-                        { Xk++; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
+                // Get dx, dy, p0
+                int dx, dy, p0, Dc, Xk, Yk, Pk;
+                switch (Octant)
+                {
+                    case 1: //Without Changes
+                        dx = x2 - x1;
+                        dy = y2 - y1;
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Xk, Yk);
+                            if (Pk > 0)
+                            { Xk++; Yk++; Pk += Dc; }
+                            else
+                            { Xk++; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                    case 2://Swap(x1,y1) & Swap(x2,y2)
+                        int[] Point1 = Swap(x1, y1);
+                        int[] Point2 = Swap(x2, y2);
+                        x1 = Point1[0]; y1 = Point1[1];
+                        x2 = Point2[0]; y2 = Point2[1];
+                        dx = x2 - x1;
+                        dy = y2 - y1;
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Yk, Xk);
+                            if (Pk > 0)
+                            { Xk++; Yk++; Pk += Dc; }
+                            else
+                            { Xk++; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")"); 
+                        }
+                        break;
 
-                case 3://Swap(x1,y1) , Swap(x2,y2) , Set dy = -dy & Dectrment Y
-                    Point1 = Swap(x1, y1);
-                    Point2 = Swap(x2, y2);
-                    x1 = Point1[0]; y1 = Point1[1];
-                    x2 = Point2[0]; y2 = Point2[1];
-                    dx = x2 - x1;
-                    dy = (y2 - y1) * (-1);
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk++; Yk--; Pk += Dc; }
-                        else
-                        { Xk++; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
-                case 4://Set dx = -dx & Decrement X
-                    dx = (x2 - x1) * (-1);
-                    dy = y2 - y1;
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk--; Yk++; Pk += Dc; }
-                        else
-                        { Xk--; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
-                case 5://Set dx = -dx , Set dy = -dy , Decrement x & Decrement y
-                    dx = (x2 - x1) * (-1);
-                    dy = (y2 - y1) * (-1);
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk--; Yk--; Pk += Dc; }
-                        else
-                        { Xk--; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
-                case 6://Swap(x1,y1) , Swap(x2,y2) , Set dx = -dx , Set dy = -dy , Dectrment x & Dectrment Y
-                    Point1 = Swap(x1, y1);
-                    Point2 = Swap(x2, y2);
-                    x1 = Point1[0]; y1 = Point1[1];
-                    x2 = Point2[0]; y2 = Point2[1];
-                    dx = (x2 - x1) * (-1);
-                    dy = (y2 - y1) * (-1);
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk--; Yk--; Pk += Dc; }
-                        else
-                        { Xk--; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
-                case 7://Swap(x1,y1) , Swap(x2,y2) , Set dx = -dx & Dectrment x 
-                    Point1 = Swap(x1, y1);
-                    Point2 = Swap(x2, y2);
-                    x1 = Point1[0]; y1 = Point1[1];
-                    x2 = Point2[0]; y2 = Point2[1];
-                    dx = (x2 - x1) * (-1);
-                    dy = y2 - y1;
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk--; Yk++; Pk += Dc; }
-                        else
-                        { Xk--; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
-                case 8://Set dy = -dy & Dectrment Y
-                    dx = x2 - x1;
-                    dy = (y2 - y1) * (-1);
-                    p0 = 2 * dy - dx;
-                    Dc = 2 * dy - 2 * dx;
-                    Xk = x1; Yk = y1; Pk = p0;
-                    while ((Xk != x2))
-                    {
-                        if (Pk > 0)
-                        { Xk++; Yk--; Pk += Dc; }
-                        else
-                        { Xk++; Pk += 2 * dy; }
-                        Console.WriteLine("(" + Xk + "," + Yk + ")");
-                        chart1.Series["P1"].Points.AddXY(Xk, Yk);
-                    }
-                    break;
+                    case 3://Swap(x1,y1) , Swap(x2,y2) , Set dy = -dy & Dectrment Y
+                        Point1 = Swap(x1, y1);
+                        Point2 = Swap(x2, y2);
+                        x1 = Point1[0]; y1 = Point1[1];
+                        x2 = Point2[0]; y2 = Point2[1];
+                        dx = x2 - x1;
+                        dy = (y2 - y1) * (-1);
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Yk, Xk);
+                            if (Pk > 0)
+                            { Xk++; Yk--; Pk += Dc; }
+                            else
+                            { Xk++; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                    case 4://Set dx = -dx & Decrement X
+                        dx = (x2 - x1) * (-1);
+                        dy = y2 - y1;
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Xk, Yk);
+                            if (Pk > 0)
+                            { Xk--; Yk++; Pk += Dc; }
+                            else
+                            { Xk--; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                    case 5://Set dx = -dx , Set dy = -dy , Decrement x & Decrement y
+                        dx = (x2 - x1) * (-1);
+                        dy = (y2 - y1) * (-1);
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Xk, Yk);
+                            if (Pk > 0)
+                            { Xk--; Yk--; Pk += Dc; }
+                            else
+                            { Xk--; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                    case 6://Swap(x1,y1) , Swap(x2,y2) , Set dx = -dx , Set dy = -dy , Dectrment x & Dectrment Y
+                        Point1 = Swap(x1, y1);
+                        Point2 = Swap(x2, y2);
+                        x1 = Point1[0]; y1 = Point1[1];
+                        x2 = Point2[0]; y2 = Point2[1];
+                        dx = (x2 - x1) * (-1);
+                        dy = (y2 - y1) * (-1);
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Yk, Xk);
+                            if (Pk > 0)
+                            { Xk--; Yk--; Pk += Dc; }
+                            else
+                            { Xk--; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                    case 7://Swap(x1,y1) , Swap(x2,y2) , Set dx = -dx & Dectrment x 
+                        Point1 = Swap(x1, y1);
+                        Point2 = Swap(x2, y2);
+                        x1 = Point1[0]; y1 = Point1[1];
+                        x2 = Point2[0]; y2 = Point2[1];
+                        dx = (x2 - x1) * (-1);
+                        dy = y2 - y1;
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Yk, Xk);
+                            if (Pk > 0)
+                            { Xk--; Yk++; Pk += Dc; }
+                            else
+                            { Xk--; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                    case 8://Set dy = -dy & Dectrment Y
+                        dx = x2 - x1;
+                        dy = (y2 - y1) * (-1);
+                        p0 = 2 * dy - dx;
+                        Dc = 2 * dy - 2 * dx;
+                        Xk = x1; Yk = y1; Pk = p0;
+                        while ((Xk != x2))
+                        {
+                            chart1.Series["Bresenham"].Points.AddXY(Xk, Yk);
+                            if (Pk > 0)
+                            { Xk++; Yk--; Pk += Dc; }
+                            else
+                            { Xk++; Pk += 2 * dy; }
+                            Console.WriteLine("(" + Xk + "," + Yk + ")");
+                        }
+                        break;
+                }
+            }
+            if(radioButton2.Checked == true)
+            {
+                int dx = x2 - x1, dy = y2 - y1, steps;
+                float x_increment, y_increment, x = x1, y = y1;
+
+                steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+                x_increment = (float)dx / (float)steps;
+                y_increment = (float)dy / (float)steps;
+                chart1.Series["DDA"].Points.AddXY((int)Math.Round(x), (int)Math.Round(y));
+                for (int k = 0; k < steps; k++)
+                {
+                    x += x_increment;
+                    y += y_increment;
+                    chart1.Series["DDA"].Points.AddXY((int)Math.Round(x), (int)Math.Round(y));
+                }
             }
 
             
@@ -258,7 +276,8 @@ namespace BresenHam
 
         private void button2_Click(object sender, EventArgs e)
         {
-            chart1.Series["P1"].Points.Clear();
+            if(radioButton1.Checked==true) chart1.Series["Bresenham"].Points.Clear();
+            if (radioButton2.Checked == true) chart1.Series["DDA"].Points.Clear();
         }
     }
 }
